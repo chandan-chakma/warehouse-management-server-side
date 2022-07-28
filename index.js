@@ -3,6 +3,7 @@ const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 require('dotenv').config()
+const jwt = require('jsonwebtoken');
 
 const app = express();
 
@@ -23,6 +24,20 @@ async function run() {
 
         const storeCollection = client.db("store").collection("product");
 
+        // jwt Auth
+        app.post('/signin', async (req, res) => {
+            const user = req.body;
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN, {
+                expiresIn: "1d"
+
+            });
+
+            res.send({ accessToken });
+
+
+        })
+
+        // ==============================
         app.get('/product', async (req, res) => {
             const query = {};
             const cursor = storeCollection.find(query);
